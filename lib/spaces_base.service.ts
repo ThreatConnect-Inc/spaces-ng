@@ -9,7 +9,7 @@ import {
 }
 from '@angular/http';
 
-import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 
 import { SpacesLoggingService } from './spaces_logging.service';
 
@@ -30,9 +30,7 @@ export class SpacesBaseService implements Resolve<boolean> {
 
     constructor(
         private http: Http,
-        private logging: SpacesLoggingService,
-        private router: Router
-    ) { 
+        private logging: SpacesLoggingService) {
         /* Set logging module parameters */
         this.logging.moduleColor('#2878b7', '#fff', 'SpacesBaseService');
         this.initPromise = new Promise(resolve => this.initResolve = resolve);
