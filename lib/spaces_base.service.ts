@@ -9,9 +9,10 @@ import {
 }
 from '@angular/http';
 
-import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
+import {ActivatedRoute, ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot} from '@angular/router';
 
 import { SpacesLoggingService } from './spaces_logging.service';
+import {Observable} from "rxjs/Observable";
 
 class SpacesQueryEncoder extends QueryEncoder {
     encodeKey(k: string): string { return encodeURIComponent(k); }
@@ -25,24 +26,25 @@ export class SpacesBaseService implements Resolve<boolean> {
     private _tcToken: string;
     private _tcTokenExpires: number;
     private _initialized: boolean = false;
-    private initPromise: Promise<boolean>;
+    private initPromise: Observable<boolean>;
     private initResolve: any;
 
     constructor(
         private http: Http,
-        private logging: SpacesLoggingService) {
+        private logging: SpacesLoggingService,
+    ) {
         /* Set logging module parameters */
         this.logging.moduleColor('#2878b7', '#fff', 'SpacesBaseService');
-        this.initPromise = new Promise(resolve => this.initResolve = resolve);
+        this.initPromise = new Observable(resolve => this.initResolve = resolve);
     }
 
-    public resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Boolean>|Promise<Boolean>|Boolean {
         this.logging.debug('SpacesBaseService', 'Resolve called');
         if (!this._initialized) {
             this.logging.debug('SpacesBaseService.resolve()', `Got params ${route.queryParamMap}`);
             this.init(route.queryParamMap);
         }
-        return true;
+        return this.initialized;
     }
     
     public init(params): void {
@@ -62,7 +64,7 @@ export class SpacesBaseService implements Resolve<boolean> {
         }
     }
 
-    get initialized(): Promise<boolean> {
+    get initialized(): Observable<boolean> {
         /**
          * Promise resolved when Query String Parameters are parsed
          */
