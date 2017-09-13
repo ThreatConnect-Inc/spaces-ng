@@ -37,8 +37,10 @@ export class SpacesBaseService implements Resolve<boolean> {
     }
 
     public resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+        this.logging.debug('SpacesBaseService', 'Resolve called');
         if (!this._initialized) {
-            this.init(route.params);
+            this.logging.debug('SpacesBaseService.resolve()', `Got params ${route.queryParamMap}`);
+            this.init(route.queryParamMap);
         }
         return true;
     }
