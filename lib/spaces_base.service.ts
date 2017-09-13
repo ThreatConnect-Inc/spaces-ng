@@ -8,6 +8,9 @@ import {
     URLSearchParams
 }
 from '@angular/http';
+
+import { ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot } from '@angular/router';
+
 import { SpacesLoggingService } from './spaces_logging.service';
 
 class SpacesQueryEncoder extends QueryEncoder {
@@ -17,7 +20,7 @@ class SpacesQueryEncoder extends QueryEncoder {
 
 
 @Injectable()
-export class SpacesBaseService {
+export class SpacesBaseService implements Resolve<boolean> {
     private _params: any;
     private _tcToken: string;
     private _tcTokenExpires: number;
@@ -27,14 +30,20 @@ export class SpacesBaseService {
 
     constructor(
         private http: Http,
-        private logging: SpacesLoggingService
+        private logging: SpacesLoggingService,
+        private router: Router
     ) { 
         /* Set logging module parameters */
         this.logging.moduleColor('#2878b7', '#fff', 'SpacesBaseService');
         this.initPromise = new Promise(resolve => this.initResolve = resolve);
     }
 
-    ngOnInit() { /* empty block */ }
+    public resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+        if (!this._initialized) {
+            this.init(route.params);
+        }
+        return true;
+    }
     
     public init(params): void {
         /**
