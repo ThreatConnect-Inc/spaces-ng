@@ -38,7 +38,7 @@ export class SpacesBaseService implements Resolve<boolean> {
         this.initPromise = new Observable(resolve => this.initResolve = resolve);
     }
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Boolean>|Promise<Boolean>|Boolean {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Boolean> {
         this.logging.debug('SpacesBaseService', 'Resolve called');
         if (!this._initialized) {
             this.logging.debug('SpacesBaseService.resolve()', `Got params ${route.queryParamMap}`);
