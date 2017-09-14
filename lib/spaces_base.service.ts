@@ -28,7 +28,7 @@ export class SpacesBaseService implements Resolve<boolean> {
     private _tcToken: string;
     private _tcTokenExpires: number;
     private _initialized: boolean = false;
-    private initPromise: Observable<boolean>;
+    private initPromise: BehaviorSubject<Boolean>;
 
     constructor(
         private http: Http,
@@ -41,7 +41,6 @@ export class SpacesBaseService implements Resolve<boolean> {
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Boolean> {
         console.log('resolve');
-        // this.initPromise = new Observable(resolve => this.initResolve = resolve);
 
         console.log('route.queryParamMap.keys', route.queryParamMap.keys);
         if (!this._initialized) {
@@ -55,16 +54,15 @@ export class SpacesBaseService implements Resolve<boolean> {
             console.log('this._tcToken', this._tcToken);
             this._tcTokenExpires = this._params['tcTokenExpires'];  // set for token renew
             this._initialized = true;
+            this.initPromise.next(true);
         }
         return this.initPromise;
     }
     
-    // get initialized(): Observable<boolean> {
-    get initialized(): boolean {
+    get initialized(): Observable<boolean> {
         /**
          * Promise resolved when Query String Parameters are parsed
          */
-        // return this.initPromise;
         return this._initialized;
     }
 
