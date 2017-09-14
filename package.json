@@ -74,5 +74,10 @@
     "url": "git@github.com:Threatconnect-Inc/spaces-ng.git"
   },
   "typings": "dist/main.d.ts",
-  "version": "0.3.1"
+  "version": "0.3.1",
+  "dependencies": {
+    "ngx-bowser": "^0.1.0",
+    "primeng": "^4.2.0",
+    "primeui": "^4.1.15"
+  }
 }

@@ -29,7 +29,6 @@ export class SpacesBaseService implements Resolve<boolean> {
     private _tcTokenExpires: number;
     private _initialized: boolean = false;
     private initPromise: Observable<boolean>;
-    private initResolve: any;
 
     constructor(
         private http: Http,
@@ -42,11 +41,12 @@ export class SpacesBaseService implements Resolve<boolean> {
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Boolean> {
         console.log('resolve');
+        // this.initPromise = new Observable(resolve => this.initResolve = resolve);
+
         console.log('route.queryParamMap.keys', route.queryParamMap.keys);
         if (!this._initialized) {
             console.log(`Got params ${route.queryParamMap}`);
             // this.init(route.queryParamMap);
-            this._initialized = true;
             this._params = route.queryParams;
             console.log('this._params', this._params);
             console.log('route.queryParamMap', route.queryParamMap);
@@ -54,15 +54,18 @@ export class SpacesBaseService implements Resolve<boolean> {
             this._tcToken = decodeURIComponent(this._params['tcToken']);  // set for token renew
             console.log('this._tcToken', this._tcToken);
             this._tcTokenExpires = this._params['tcTokenExpires'];  // set for token renew
+            this._initialized = true;
         }
         return this.initPromise;
     }
-
-    get initialized(): Observable<boolean> {
+    
+    // get initialized(): Observable<boolean> {
+    get initialized(): boolean {
         /**
          * Promise resolved when Query String Parameters are parsed
          */
-        return this.initPromise;
+        // return this.initPromise;
+        return this._initialized;
     }
 
     get params(): any {
@@ -174,7 +177,7 @@ export class SpacesBaseService implements Resolve<boolean> {
          * Execute the API request
          * @param {Response} err - The https Response Object
          */
-        var errorText = error.text();
+        const errorText = error.text();
         this.logging.error('spaces_base.service: request to ' +  error.url +
             ' failed with: ', errorText);
         // console.error('spaces_base.service: request to ' + 
