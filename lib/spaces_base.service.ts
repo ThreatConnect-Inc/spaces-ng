@@ -26,7 +26,7 @@ export class SpacesBaseService implements Resolve<boolean> {
     private _tcToken: string;
     private _tcTokenExpires: number;
     private _initialized: boolean = false;
-    private initPromise: Observable<boolean>;
+    // private initPromise: Observable<boolean>;
     private initResolve: any;
 
     constructor(
@@ -35,40 +35,52 @@ export class SpacesBaseService implements Resolve<boolean> {
     ) {
         /* Set logging module parameters */
         this.logging.moduleColor('#2878b7', '#fff', 'SpacesBaseService');
-        this.initPromise = new Observable(resolve => this.initResolve = resolve);
+        // this.initPromise = new Observable(resolve => this.initResolve = resolve);
     }
 
-    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Boolean> {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
         console.log("resolve");
+        console.log('route.queryParamMap.keys', route.queryParamMap.keys);
         if (!this._initialized) {
             console.log(`Got params ${route.queryParamMap}`);
-            this.init(route.queryParamMap);
+            // this.init(route.queryParamMap);
+            this._params = route.queryParams;
+            console.log('this._params', this._params);
+            console.log('route.queryParamMap', route.queryParamMap);
+            console.log('route.queryParams', route.queryParams);
+            this._tcToken = decodeURIComponent(this._params['tcToken']);  // set for token renew
+            console.log('this._tcToken', this._tcToken);
+            this._tcTokenExpires = this._params['tcTokenExpires'];  // set for token renew
+            this._initialized = true;
         }
         return this.initialized;
     }
     
-    public init(params): void {
-        /**
-         * Initialize the Base Service with Query String Parameters
-         * @param {any} params  Query String Parameters 
-         */
-        if (Object.keys(params).length > 0 && params.constructor === Object) {
-            this.logging.debug('params', params);
-            if (!this._initialized) {
-                this._initialized = true;
-                this._params = params;
-                this._tcToken = decodeURIComponent(params['tcToken']);  // set for token renew
-                this._tcTokenExpires = params['tcTokenExpires'];  // set for token renew
-                this.initResolve();
-            }
-        }
-    }
+    // public init(params): void {
+    //     /**
+    //      * Initialize the Base Service with Query String Parameters
+    //      * @param {any} params  Query String Parameters 
+    //      */
+    //     if (Object.keys(params).length > 0 && params.constructor === Object) {
+    //         this.logging.debug('params', params);
+    //         if (!this._initialized) {
+    //             this._initialized = true;
+    //             this._params = params;
+    //             this._tcToken = decodeURIComponent(params['tcToken']);  // set for token renew
+    //             console.log('this._tcToken', this._tcToken);
+    //             this._tcTokenExpires = params['tcTokenExpires'];  // set for token renew
+    //             // this.initResolve();
+    //         }
+    //     }
+    // }
 
-    get initialized(): Observable<boolean> {
+    // get initialized(): Observable<boolean> {
+    get initialized(): boolean {
         /**
          * Promise resolved when Query String Parameters are parsed
          */
-        return this.initPromise;
+        // return this.initPromise;
+        return this._initialized;
     }
 
     get params(): any {
@@ -87,6 +99,7 @@ export class SpacesBaseService implements Resolve<boolean> {
          if (this.initialized) {
             // spaces need to be un-encoded from '+' before decoding
             let param = this._params[name];
+            console.log('BCS !!!!!!!!!!!!!!!!!!!', param);
             if (param != undefined) {
                 param = decodeURIComponent(param.replace('+', ' '));
             }
