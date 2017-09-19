@@ -153,7 +153,7 @@ export class SpacesBaseService implements Resolve<any> {
         params.set('expiredToken', this._tcToken);
 
         let url = [
-            this._params['tcApiPath'].replace('/api', ''),
+            this._params['tcApiPath'],
             'appAuth'
         ].join('/');
 
