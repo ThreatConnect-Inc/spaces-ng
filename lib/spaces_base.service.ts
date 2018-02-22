@@ -8,7 +8,13 @@ import {
     URLSearchParams
 }
 from '@angular/http';
+
+import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
+
 import { SpacesLoggingService } from './spaces_logging.service';
+
+import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 class SpacesQueryEncoder extends QueryEncoder {
     encodeKey(k: string): string { return encodeURIComponent(k); }
@@ -17,42 +23,48 @@ class SpacesQueryEncoder extends QueryEncoder {
 
 
 @Injectable()
-export class SpacesBaseService {
+export class SpacesBaseService implements Resolve<any> {
     private _params: any;
     private _tcToken: string;
     private _tcTokenExpires: number;
     private _initialized: boolean = false;
-    private initPromise: Promise<boolean>;
-    private initResolve: any;
+    private initPromise: Promise<any>;
+    private initPromiseResolver: () => any;
+    private initPromiseRejector: () => any;
+
 
     constructor(
         private http: Http,
-        private logging: SpacesLoggingService
-    ) { 
+        private logging: SpacesLoggingService,
+    ) {
         /* Set logging module parameters */
         this.logging.moduleColor('#2878b7', '#fff', 'SpacesBaseService');
-        this.initPromise = new Promise(resolve => this.initResolve = resolve);
+        this.initPromise = new Promise((resolve, reject) => {
+            this.initPromiseResolver = resolve;
+            this.initPromiseRejector = reject;
+        });
     }
 
-    ngOnInit() { /* empty block */ }
-    
-    public init(params): void {
-        /**
-         * Initialize the Base Service with Query String Parameters
-         * @param {any} params  Query String Parameters 
-         */
-        if (Object.keys(params).length > 0 && params.constructor === Object) {
-            this.logging.debug('params', params);
-            if (!this._initialized) {
-                this._initialized = true;
-                this._params = params;
-                this._tcToken = decodeURIComponent(params['tcToken']);  // set for token renew
-                this._tcTokenExpires = params['tcTokenExpires'];  // set for token renew
-                this.initResolve();
-            }
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<any> {
+        console.log('resolve');
+
+        console.log('route.queryParamMap.keys', route.queryParamMap.keys);
+        if (!this._initialized) {
+            console.log(`Got params ${route.queryParamMap}`);
+            // this.init(route.queryParamMap);
+            this._params = route.queryParams;
+            console.log('this._params', this._params);
+            console.log('route.queryParamMap', route.queryParamMap);
+            console.log('route.queryParams', route.queryParams);
+            this._tcToken = decodeURIComponent(this._params['tcToken']);  // set for token renew
+            console.log('this._tcToken', this._tcToken);
+            this._tcTokenExpires = this._params['tcTokenExpires'];  // set for token renew
+            this._initialized = true;
+            this.initPromiseResolver();
         }
+        return this.initPromise;
     }
-
+    
     get initialized(): Promise<boolean> {
         /**
          * Promise resolved when Query String Parameters are parsed
@@ -66,7 +78,7 @@ export class SpacesBaseService {
          */
         return this._params;
     }
-    
+
     public param(name): string {
         /**
          * Return the request parameter
@@ -76,7 +88,7 @@ export class SpacesBaseService {
          if (this.initialized) {
             // spaces need to be un-encoded from '+' before decoding
             let param = this._params[name];
-            if (param != undefined) {
+            if (param !== undefined) {
                 param = decodeURIComponent(param.replace('+', ' '));
             }
             return param;
@@ -85,7 +97,7 @@ export class SpacesBaseService {
             return '';
          }
     }
-    
+
     get tcApiPath(): string {
         /**
          * Return the ThreatConnect API Path
@@ -93,7 +105,7 @@ export class SpacesBaseService {
          */
         return this.param('tcApiPath');
     }
-    
+
     get tcProxyServer(): string {
         /**
          * Return the ThreatConnect Proxy Server URL
@@ -103,7 +115,7 @@ export class SpacesBaseService {
         /* The proxy server *should* be the same server as is being accessed for the Spaces app. */
         return '';
     }
-    
+
     get tcSpaceElementId(): string {
         /**
          * Return the ThreatConnect Spaces Element Id
@@ -111,23 +123,23 @@ export class SpacesBaseService {
          */
         return this.param('tcSpaceElementId');
     }
-    
+
     get tcToken(): string {
         /**
          * Return the ThreatConnect API Token
          * @return {string} The API token passed in the query string parameters
          */
-         
+
         /* check if token is expired and if so renew */
         let buffer = 15;
         let currentSeconds = (new Date).getTime() / 1000 + buffer;
-        if (this._tcTokenExpires < currentSeconds) { 
+        if (this._tcTokenExpires < currentSeconds) {
             this.tcTokenRenew();
         } else {
             return this._tcToken;
         }
     }
-    
+
     private tcTokenRenew(): any {
         /**
          * Renew ThreatConnect API Token
@@ -141,10 +153,10 @@ export class SpacesBaseService {
         params.set('expiredToken', this._tcToken);
 
         let url = [
-            this._params['tcApiPath'].replace('/api', ''),
+            this._params['tcApiPath'],
             'appAuth'
         ].join('/');
-        
+
         this.http.request(url, options)
             .subscribe(
                 res => {
@@ -163,14 +175,14 @@ export class SpacesBaseService {
                 }
             );
     }
-    
+
     private handleAjaxError(error: Response): any {
         /**
          * Execute the API request
          * @param {Response} err - The https Response Object
          */
-        var errorText = error.text();
-        this.logging.error('spaces_base.service: request to ' +  error.url + 
+        const errorText = error.text();
+        this.logging.error('spaces_base.service: request to ' +  error.url +
             ' failed with: ', errorText);
         // console.error('spaces_base.service: request to ' + 
         //     error.url + ' failed with: ' + errorText);

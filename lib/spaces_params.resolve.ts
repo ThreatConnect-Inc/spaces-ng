@@ -15,7 +15,8 @@ export class SpacesParamsResolve implements Resolve<any> {
   }
   
   resolve(route: ActivatedRouteSnapshot) {
-      this.spacesBase.init(route.queryParams);
+      // this.spacesBase.init(route.queryParams);
+      console.log('BCS', this.spacesBase.params)
       return route.queryParams;
   }
 }
