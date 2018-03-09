@@ -1,0 +1,7 @@
+<div *ngIf="!done" class="centered">
+  <h4>Checking parameters</h4>
+</div>
+
+<div *ngIf="done && missingParams.length > 0" class="centered">
+  <h4>You must configure parameters to use this app.</h4>
+</div>

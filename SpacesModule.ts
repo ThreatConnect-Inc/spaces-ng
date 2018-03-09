@@ -10,8 +10,15 @@ import { SpacesUtilityService } from './lib/spaces_utilities.service';
 
 // Third part
 import { BowserModule } from 'ngx-bowser';
+import { SpacesLandingPageComponent } from './lib/components/spaces-landing-page/spaces-landing-page.component';
 
 @NgModule({
+    declarations: [
+        SpacesLandingPageComponent
+    ],
+    exports: [
+        SpacesLandingPageComponent
+    ],
     imports: [
         BowserModule,
     ],
