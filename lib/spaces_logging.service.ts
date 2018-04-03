@@ -45,8 +45,6 @@ export class SpacesLoggingService {
         this.info('Browser', this.browser);
     }
 
-    ngOnInit() { /* empty block */ }
-
     get logLevel(): string {
         /**
          * Return the logging level
@@ -233,12 +231,12 @@ export class SpacesLoggingService {
             const error = new Error;
             let logStack = error.stack ? error.stack.split('\n') : [];
             
-            if (methodIndex == undefined) {
+            if (methodIndex === undefined) {
                 methodIndex = this.methodIndex();
             }
             // console.log('methodIndex', methodIndex);
             let caller = this.parseLogLine(logStack[methodIndex]);
-            if (this.browser == 'chrome' &&  caller.module === 'SafeSubscriber') {
+            if (this.browser === 'chrome' &&  caller.module === 'SafeSubscriber') {
                 // best try to handle chrome stack manipulation
                 caller = this.parseLogLine(logStack[logStack.length - 1]);
             }
