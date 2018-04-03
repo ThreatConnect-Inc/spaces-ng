@@ -7,7 +7,7 @@
     "angular"
   ],
   "license": "Apache-2.0",
-  "main": "dist/main.js",
+  "main": "bundles/spaces-ng.umd.js",
   "maintainers": [
     {
       "email": "bsummers@threatconnect.com",
@@ -21,11 +21,6 @@
   "name": "spaces-ng",
   "version": "0.3.1",
   "description": "Base Module for ThreatConnect Spaces Apps.",
-  "scripts": {
-    "build": "ng-packagr -p package.json",
-    "copyPackageJson": "copyfiles package.json dist",
-    "semantic-release": "semantic-release pre && npm run copyPackageJson && npm publish dist && semantic-release post"
-  },
   "author": {
     "name": "ThreatConnect Inc"
   },
@@ -42,11 +37,6 @@
       "name": "Chris Blades"
     }
   ],
-  "ngPackage": {
-    "lib": {
-      "entryFile": "public_api.ts"
-    }
-  },
   "peerDependencies": {},
   "devDependencies": {
     "@angular/common": "^5.0.2",
@@ -72,5 +62,12 @@
   "repository": {
     "type": "git",
     "url": "git@github.com:Threatconnect-Inc/spaces-ng.git"
+  },
+  "module": "esm5/spaces-ng.js",
+  "es2015": "esm2015/spaces-ng.js",
+  "typings": "spaces-ng.d.ts",
+  "metadata": "spaces-ng.metadata.json",
+  "dependencies": {
+    "tslib": "^1.7.1"
   }
 }
