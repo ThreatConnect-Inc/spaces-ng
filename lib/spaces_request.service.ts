@@ -58,8 +58,8 @@ export class SpacesRequestService {
     public method(data: string) {
         /**
          * Set the HTTP method
-         * @param {string} data - The HTTP Method (DELETE, GET, POST, PUT)
-         * @return {RequestService} The RequestService Object
+         * @param data - The HTTP Method (DELETE, GET, POST, PUT)
+         * @return The RequestService Object
          */
         this.logging.debug('data', data);
         switch (data.toUpperCase()) {
@@ -85,8 +85,8 @@ export class SpacesRequestService {
     public proxy(data: boolean) {
         /**
          * Use secureProxy
-         * @param {boolean} data - Enable/Disable proxy
-         * @return {RequestService} The RequestService Object
+         * @param data - Enable/Disable proxy
+         * @return The RequestService Object
          */
         this.logging.debug('data', data);
         this.useProxy = data;
@@ -96,8 +96,8 @@ export class SpacesRequestService {
     public url(data: string) {
         /**
          * Set the request URI
-         * @param {string} data - The URL for the request
-         * @return {RequestService} The RequestService Object
+         * @param data - The URL for the request
+         * @return The RequestService Object
          */
         this.logging.debug('data', data);
         this.requestUrl = data;
@@ -111,9 +111,9 @@ export class SpacesRequestService {
     public header(key: string, val: any) {
         /**
          * Add a header to the request
-         * @param {string} key - The header key
-         * @param {string} val - The header value
-         * @return {RequestService} The RequestService Object
+         * @param key - The header key
+         * @param val - The header value
+         * @return The RequestService Object
          */
         this.headers.set(key, val);
         this.logging.debug('key', key);
@@ -126,8 +126,8 @@ export class SpacesRequestService {
     public authorization(data: string) {
         /**
          * Helper method to set common authorization header
-         * @param {string} data - The authorization header
-         * @return {RequestService} The RequestService Object
+         * @param data - The authorization header
+         * @return The RequestService Object
          */
         this.logging.debug('data', data);
         this.header('Authorization', data);
@@ -137,8 +137,8 @@ export class SpacesRequestService {
     public contentType(data: string) {
         /**
          * Helper method to set common content-type header
-         * @param {string} data - The content-type header
-         * @return {RequestService} The RequestService Object
+         * @param data - The content-type header
+         * @return The RequestService Object
          */
         this.logging.debug('data', data);
         this.header('Content-Type', data);
@@ -152,8 +152,8 @@ export class SpacesRequestService {
     public body(data: any) {
         /**
          * The body for the request
-         * @param {any} data - The body contents
-         * @return {RequestService} The RequestService Object
+         * @param data - The body contents
+         * @return The RequestService Object
          */
         this.logging.debug('data', data);
         this.options.body = data;
@@ -167,9 +167,9 @@ export class SpacesRequestService {
     public param(key: string, val: any) {
         /**
          * Add a query string parameter to the request
-         * @param {string} key - The parameter key
-         * @param {string} val - The parameter value
-         * @return {RequestService} The RequestService Object
+         * @param key - The parameter key
+         * @param val - The parameter value
+         * @return The RequestService Object
          */
         this.logging.debug('key', key);
         this.logging.debug('val', val);
@@ -182,8 +182,8 @@ export class SpacesRequestService {
     public createActivityLog(data: boolean) {
         /**
          * Helper method to set common createActivityLog query string parameter
-         * @param {boolean} data - The createActivityLog boolean value
-         * @return {RequestService} The RequestService Object
+         * @param data - The createActivityLog boolean value
+         * @return The RequestService Object
          */
         this.logging.debug('data', data);
         this.param('createActivityLog', String(data));
@@ -193,8 +193,8 @@ export class SpacesRequestService {
     public modifiedSince(data: string) {
         /**
          * Helper method to set common modifiedSince query string parameter
-         * @param {string} data - The modifiedSince value
-         * @return {RequestService} The RequestService Object
+         * @param data - The modifiedSince value
+         * @return The RequestService Object
          */
         this.logging.debug('data', data);
         this.param('modifiedSince', data);
@@ -204,8 +204,8 @@ export class SpacesRequestService {
     public owner(data: string) {
         /**
          * Helper method to set common owner query string parameter
-         * @param {string} data - The owner value
-         * @return {RequestService} The RequestService Object
+         * @param data - The owner value
+         * @return The RequestService Object
          */
         this.param('owner', data);
         return this;
@@ -214,8 +214,8 @@ export class SpacesRequestService {
     public resultLimit(data: number) {
         /**
          * Helper method to set common resultLimit query string parameter
-         * @param {number} data - The resultLimit value for pagination
-         * @return {RequestService} The RequestService Object
+         * @param data - The resultLimit value for pagination
+         * @return The RequestService Object
          */
         this.logging.debug('data', data);
         this.param('resultLimit', String(data));
@@ -225,8 +225,8 @@ export class SpacesRequestService {
     public resultStart(data: number) {
         /**
          * Helper method to set common resultStart query string parameter
-         * @param {number} data - The resultStart value for pagination
-         * @return {RequestService} The RequestService Object
+         * @param data - The resultStart value for pagination
+         * @return The RequestService Object
          */
         this.logging.debug('data', data);
         this.param('resultStart', String(data));
@@ -257,8 +257,8 @@ export class SpacesRequestService {
     public request(): Observable<Response> {
         /**
          * Execute the API request
-         * @param {number} data - The resultStart value for pagination
-         * @return {Response} The http Response Object
+         * @param data - The resultStart value for pagination
+         * @return The http Response Object
          */
         this.logging.debug('this.requestUrl', this.requestUrl);
         this.logging.debug('this.options', this.options);
@@ -284,7 +284,7 @@ export class SpacesRequestService {
     public resetOptions() {
         /**
          * Reset request options
-         * @return {RequestService} The RequestService Object
+         * @return The RequestService Object
          */
         this.logging.info('resetOptions', 'resetOptions');
         this.headers = new Headers();
@@ -302,7 +302,7 @@ export class SpacesRequestService {
     private handleAjaxError(error: Response) {
         /**
          * Execute the API request
-         * @param {Response} err - The https Response Object
+         * @param err - The https Response Object
          */
         var errorText = error.text();
         this.logging.error('Error', 'request to ' + error.url + 

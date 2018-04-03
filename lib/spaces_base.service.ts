@@ -13,9 +13,6 @@ import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/r
 
 import { SpacesLoggingService } from './spaces_logging.service';
 
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-
 class SpacesQueryEncoder extends QueryEncoder {
     encodeKey(k: string): string { return encodeURIComponent(k); }
     encodeValue(v: string): string { return encodeURIComponent(v); }
@@ -82,8 +79,8 @@ export class SpacesBaseService implements Resolve<any> {
     public param(name): string {
         /**
          * Return the request parameter
-         * @param {string} name The parameter name (key)
-         * @return {string} Decoded URL component
+         * @param name The parameter name (key)
+         * @return Decoded URL component
          */
          if (this.initialized) {
             // spaces need to be un-encoded from '+' before decoding
@@ -101,7 +98,7 @@ export class SpacesBaseService implements Resolve<any> {
     get tcApiPath(): string {
         /**
          * Return the ThreatConnect API Path
-         * @return {number} The ThreatConnect API path passed in the query string parameters
+         * @return The ThreatConnect API path passed in the query string parameters
          */
         return this.param('tcApiPath');
     }
@@ -109,7 +106,7 @@ export class SpacesBaseService implements Resolve<any> {
     get tcProxyServer(): string {
         /**
          * Return the ThreatConnect Proxy Server URL
-         * @return {string} The ThreatConnect Proxy Server URL calculated from tcApiPath
+         * @return The ThreatConnect Proxy Server URL calculated from tcApiPath
          */
         // return this.param('tcApiPath').replace(/\/api$/, '');
         /* The proxy server *should* be the same server as is being accessed for the Spaces app. */
@@ -119,7 +116,7 @@ export class SpacesBaseService implements Resolve<any> {
     get tcSpaceElementId(): string {
         /**
          * Return the ThreatConnect Spaces Element Id
-         * @return {number} The Spaces Element Id passed in the query string parameters
+         * @return The Spaces Element Id passed in the query string parameters
          */
         return this.param('tcSpaceElementId');
     }
@@ -127,7 +124,7 @@ export class SpacesBaseService implements Resolve<any> {
     get tcToken(): string {
         /**
          * Return the ThreatConnect API Token
-         * @return {string} The API token passed in the query string parameters
+         * @return The API token passed in the query string parameters
          */
 
         /* check if token is expired and if so renew */
@@ -143,7 +140,7 @@ export class SpacesBaseService implements Resolve<any> {
     private tcTokenRenew(): any {
         /**
          * Renew ThreatConnect API Token
-         * @return {string} The new ThreatConnect Token
+         * @return The new ThreatConnect Token
          */
         let params = new URLSearchParams('', new SpacesQueryEncoder());  // must be above options
         let options = new RequestOptions({
@@ -179,7 +176,7 @@ export class SpacesBaseService implements Resolve<any> {
     private handleAjaxError(error: Response): any {
         /**
          * Execute the API request
-         * @param {Response} err - The https Response Object
+         * @param err - The https Response Object
          */
         const errorText = error.text();
         this.logging.error('spaces_base.service: request to ' +  error.url +

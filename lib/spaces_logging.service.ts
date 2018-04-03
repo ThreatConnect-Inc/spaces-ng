@@ -46,11 +46,11 @@ export class SpacesLoggingService {
     }
 
     ngOnInit() { /* empty block */ }
-    
+
     get logLevel(): string {
         /**
          * Return the logging level
-         * @return {string} The logging level (debug, info, warn, critical)
+         * @return The logging level (debug, info, warn, critical)
          */
         let levels = Object.keys(this.levels);
         return levels[this._logLevel];
@@ -59,7 +59,7 @@ export class SpacesLoggingService {
     set logLevel(level: string) {
         /**
          * Set the logging level
-         * @param {string} The logging level (debug, info, warn, critical)
+         * @param The logging level (debug, info, warn, critical)
          */
         if (this.levels[level] !== 'null') {
             this._logLevel = this.levels[level];
@@ -79,8 +79,8 @@ export class SpacesLoggingService {
     ) {
         /**
          * Set color for critical console messages
-         * @param {string} background - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param background - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.criticalBackground = background;
         this.criticalColor = color;
@@ -92,8 +92,8 @@ export class SpacesLoggingService {
     ) {
         /**
          * Set color for debug console messages
-         * @param {string} background - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param background - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.debugBackground = background;
         this.debugColor = color;
@@ -105,8 +105,8 @@ export class SpacesLoggingService {
     ) {
         /**
          * Set color for error console messages
-         * @param {string} background - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param background - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.errorBackground = background;
         this.errorColor = color;
@@ -118,8 +118,8 @@ export class SpacesLoggingService {
     ) {
         /**
          * Set color for info console messages
-         * @param {string} background - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param background - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.importantBackground = background;
         this.importantColor = color;
@@ -131,8 +131,8 @@ export class SpacesLoggingService {
     ) {
         /**
          * Set color for log console messages
-         * @param {string} background - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param background - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.infoBackground = background;
         this.infoColor = color;
@@ -144,8 +144,8 @@ export class SpacesLoggingService {
     ) {
         /**
          * Set color for warn console messages
-         * @param {string} background - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param background - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.warnBackground = background;
         this.warnColor = color;
@@ -158,8 +158,8 @@ export class SpacesLoggingService {
     ): void {
         /**
          * Set default color for the title on all logs for the current method
-         * @param {string} background - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param background - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         if (!methodName) {
             // try to get method name from the stack
@@ -175,7 +175,7 @@ export class SpacesLoggingService {
             this.methodColors[methodName] = {
                 bg: background,
                 color: color
-            }
+            };
         }
     }
     
@@ -186,8 +186,8 @@ export class SpacesLoggingService {
     ): void {
         /**
          * Set default color for the title on all logs for the current module
-         * @param {string} background - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param background - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         if (!moduleName) {
             let methodIndex = this.methodIndex();
@@ -202,7 +202,7 @@ export class SpacesLoggingService {
             this.moduleColors[moduleName] = {
                 bg: background,
                 color: color
-            }
+            };
         }
     }
     
@@ -218,14 +218,14 @@ export class SpacesLoggingService {
     ): void {
         /**
          * Console Log the message
-         * @param {string} level - The logging level
-         * @param {string} title - The title or description of the data being logged
-         * @param {string} msg - The msg to be logged
-         * @param {string} bg - The background color in hex format.
-         * @param {string} color - The font color in hex format.
-         * @param {string} headerBg - The background color in hex format for the header.
-         * @param {string} headerColor - The font color in hex format for the header.
-         * @param {number} methodIndex - The index of the method in the stack
+         * @param level - The logging level
+         * @param title - The title or description of the data being logged
+         * @param msg - The msg to be logged
+         * @param bg - The background color in hex format.
+         * @param color - The font color in hex format.
+         * @param headerBg - The background color in hex format for the header.
+         * @param headerColor - The font color in hex format for the header.
+         * @param methodIndex - The index of the method in the stack
          */
         let levelNo = this.levels[level];
         
@@ -278,9 +278,9 @@ export class SpacesLoggingService {
     ): string {
         /**
          * Best effor to retrieve module, method, fileName, and line number from error stack.
-         * @param {string} logLine - The line from the Error stack
-         * @param {boolean} color - Return header with color
-         * @return {object} The module, method, fileName, and line number
+         * @param logLine - The line from the Error stack
+         * @param color - Return header with color
+         * @return The module, method, fileName, and line number
          */
         let header;
         let data;
@@ -380,8 +380,8 @@ export class SpacesLoggingService {
     private parseLogLine(logLine: string): any {
         /**
          * Best effor to retrieve module, method, fileName, and line number from error stack.
-         * @param {string} logLine - The line from the Error stack
-         * @return {object} The module, method, fileName, and line number
+         * @param logLine - The line from the Error stack
+         * @return The module, method, fileName, and line number
          */
         let data;
         let line_data;
@@ -422,7 +422,7 @@ export class SpacesLoggingService {
     private methodIndex(): number {
         /**
          * Return the method index dependent on the browser.
-         * @return {string} The index number
+         * @return The index number
          */
         let index = 3;
         switch (this.browser) {
@@ -449,10 +449,10 @@ export class SpacesLoggingService {
     ): void {
         /**
          * Console Log Critical messages
-         * @param {string} title - The title or description of the data being logged
-         * @param {string} msg - The msg to be logged
-         * @param {string} bg - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param title - The title or description of the data being logged
+         * @param msg - The msg to be logged
+         * @param bg - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.log('critical', title, msg, bg, color, this.criticalBackground, this.criticalColor);
     }
@@ -465,10 +465,10 @@ export class SpacesLoggingService {
     ): void {
         /**
          * Console Log Debug messages
-         * @param {string} title - The title or description of the data being logged
-         * @param {string} msg - The msg to be logged
-         * @param {string} bg - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param title - The title or description of the data being logged
+         * @param msg - The msg to be logged
+         * @param bg - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.log('debug', title, msg, bg, color, this.debugBackground, this.debugColor);
     }
@@ -481,10 +481,10 @@ export class SpacesLoggingService {
     ): void {
         /**
          * Console Log Error messages
-         * @param {string} title - The title or description of the data being logged
-         * @param {string} msg - The msg to be logged
-         * @param {string} bg - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param title - The title or description of the data being logged
+         * @param msg - The msg to be logged
+         * @param bg - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.log('error', title, msg, bg, color, this.errorBackground, this.errorColor);
     }
@@ -497,10 +497,10 @@ export class SpacesLoggingService {
     ): void {
         /**
          * Console Log Info messages
-         * @param {string} title - The title or description of the data being logged
-         * @param {string} msg - The msg to be logged
-         * @param {string} bg - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param title - The title or description of the data being logged
+         * @param msg - The msg to be logged
+         * @param bg - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.log('info', title, msg, bg, color, this.infoBackground, this.infoColor);
     }
@@ -513,10 +513,10 @@ export class SpacesLoggingService {
     ): void {
         /**
          * Console Log Warn messages
-         * @param {string} title - The title or description of the data being logged
-         * @param {string} msg - The msg to be logged
-         * @param {string} bg - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param title - The title or description of the data being logged
+         * @param msg - The msg to be logged
+         * @param bg - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.log('important', title, msg, bg, color, this.importantBackground, this.importantColor);
     }
@@ -529,10 +529,10 @@ export class SpacesLoggingService {
     ): void {
         /**
          * Console Log Warn messages
-         * @param {string} title - The title or description of the data being logged
-         * @param {string} msg - The msg to be logged
-         * @param {string} bg - The background color in hex format.
-         * @param {string} color - The font color in hex format.
+         * @param title - The title or description of the data being logged
+         * @param msg - The msg to be logged
+         * @param bg - The background color in hex format.
+         * @param color - The font color in hex format.
          */
         this.log('warn', title, msg, bg, color, this.warnBackground, this.warnColor);
     }
@@ -543,9 +543,9 @@ export class SpacesLoggingService {
     ): string {
         /**
          * Format the CSS for console colors
-         * @param {string} background - The background color in hex format.
-         * @param {string} color - The font color in hex format.
-         * @return {string} The formatted CSS string for console colors
+         * @param background - The background color in hex format.
+         * @param color - The font color in hex format.
+         * @return The formatted CSS string for console colors
          */
         return [
             'background: ',
