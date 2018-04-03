@@ -16,11 +16,6 @@ npm-debug.log
 Thumbs.db
 .DS_Store
 
-# Ignored files
-
-*.js
-*.map
-*.d.ts
 
 # IDE files
 
@@ -30,3 +25,5 @@ Thumbs.db
 
 00__*
 bcs*
+
+dist/
