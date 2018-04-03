@@ -19,7 +19,7 @@
     }
   ],
   "name": "spaces-ng",
-  "version": "0.3.1",
+  "version": "5.0.0",
   "description": "Base Module for ThreatConnect Spaces Apps.",
   "author": {
     "name": "ThreatConnect Inc"
