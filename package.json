@@ -19,7 +19,7 @@
     }
   ],
   "name": "spaces-ng",
-  "version": "5.0.0",
+  "version": "5.0.2",
   "description": "Base Module for ThreatConnect Spaces Apps.",
   "author": {
     "name": "ThreatConnect Inc"
@@ -37,6 +37,19 @@
       "name": "Chris Blades"
     }
   ],
+  "scripts": {
+    "build": "ng-packagr -p package.json",
+    "copyPackageJson": "copyfiles package.json dist",
+    "release": "npm publish dist"
+  },
+  "ngPackage": {
+    "lib": {
+      "entryFile": "public_api.ts",
+      "umdModuleIds": {
+        "ngx-bowser": "ngx-bowser"
+      }
+    }
+  },
   "peerDependencies": {},
   "devDependencies": {
     "@angular/common": "^5.0.2",
@@ -45,6 +58,7 @@
     "@angular/core": "^5.0.2",
     "@angular/http": "^5.0.2",
     "@angular/router": "^5.0.2",
+    "@angular/platform-browser": "latest",
     "codelyzer": "^4.2.1",
     "copyfiles": "^1.2.0",
     "ng-packagr": "^2.0.0",
@@ -54,6 +68,7 @@
     "rxjs": "^5.5.2",
     "semantic-release": "^8.2.0",
     "tsickle": "^0.26.0",
+    "tslib": "^1.7.1",
     "tslint": "^5.9.1",
     "typescript": "2.4.2",
     "zone.js": "^0.8.14",
@@ -66,8 +81,5 @@
   "module": "esm5/spaces-ng.js",
   "es2015": "esm2015/spaces-ng.js",
   "typings": "spaces-ng.d.ts",
-  "metadata": "spaces-ng.metadata.json",
-  "dependencies": {
-    "tslib": "^1.7.1"
-  }
+  "metadata": "spaces-ng.metadata.json"
 }

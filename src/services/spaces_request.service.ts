@@ -1,35 +1,11 @@
 import { Injectable } from '@angular/core';
-import {
-    Headers,
-    Http,
-    QueryEncoder,
-    RequestMethod,
-    RequestOptions,
-    Response,
-    URLSearchParams
-}
-from '@angular/http';
+
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 import { SpacesBaseService } from './spaces_base.service';
 import { SpacesLoggingService } from './spaces_logging.service';
-
-
-class SpacesQueryEncoder extends QueryEncoder {
-    constructor(private logging: SpacesLoggingService) {
-        super();
-    }
-
-    encodeKey(k: string): string {
-        this.logging.info('Query Encoder', `Got key ${k}`);
-        return encodeURIComponent(k);
-    }
-    encodeValue(v: string): string {
-        this.logging.info('Query Encoder', `Got value ${v}`);
-        return encodeURIComponent(v);
-    }
-}
-
+import { HttpClient, HttpParams, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpObserve } from '@angular/common/http/src/client';
 
 @Injectable()
 export class SpacesRequestService {
@@ -37,22 +13,21 @@ export class SpacesRequestService {
      * Generic Request Module for ThreatConnect API
      */
 
-    private headers = new Headers();
-    private params = new URLSearchParams('', new SpacesQueryEncoder(this.logging));  // must be above options
-    private options = new RequestOptions({
-        headers: this.headers,
-        method: RequestMethod.Get,
-        params: this.params
-    });
+    private _method = 'GET';
+    private _body;
+
+    private _headers = new HttpHeaders();
+    private _params = new HttpParams();
     private useProxy: boolean;
-    private requestUrl: string;
+    private _url: string;
 
     constructor(
-        private http: Http,
+        private http: HttpClient,
         private logging: SpacesLoggingService,
         private spacesBase: SpacesBaseService
     ) {
         this.logging.moduleColor('#2878b7', '#fff', 'SpacesRequestService');
+        this.resetOptions();
     }
     
     public method(data: string) {
@@ -64,19 +39,19 @@ export class SpacesRequestService {
         this.logging.debug('data', data);
         switch (data.toUpperCase()) {
             case 'DELETE':
-                this.options.method = RequestMethod.Delete;
+                this._method = 'DELETE';
                 break;
             case 'GET':
-                this.options.method = RequestMethod.Get;
+                this._method = 'GET';
                 break;
             case 'POST':
-                this.options.method = RequestMethod.Post;
+                this._method = 'POST';
                 break;
             case 'PUT':
-                this.options.method = RequestMethod.Put;
+                this._method = 'PUT';
                 break;
             default:
-                this.options.method = RequestMethod.Get;
+                // todo handle this as an exception
                 break;
         }
         return this;
@@ -100,7 +75,7 @@ export class SpacesRequestService {
          * @return The RequestService Object
          */
         this.logging.debug('data', data);
-        this.requestUrl = data;
+        this._url = data;
         return this;
     }
 
@@ -115,7 +90,7 @@ export class SpacesRequestService {
          * @param val - The header value
          * @return The RequestService Object
          */
-        this.headers.set(key, val);
+        this._headers.set(key, val);
         this.logging.debug('key', key);
         this.logging.debug('val', val);
         return this;
@@ -156,7 +131,7 @@ export class SpacesRequestService {
          * @return The RequestService Object
          */
         this.logging.debug('data', data);
-        this.options.body = data;
+        this._body = data;
         return this;
     }
 
@@ -173,7 +148,7 @@ export class SpacesRequestService {
          */
         this.logging.debug('key', key);
         this.logging.debug('val', val);
-        this.params.set(key, val);
+        this._params.set(key, val);
         return this;
     }
 
@@ -237,48 +212,79 @@ export class SpacesRequestService {
         /**
          * Proxify the request using secureProxy
          */
-        let params = new URLSearchParams();
-        params.set('_targetUrl', this.requestUrl);
-        params.appendAll(this.params);
-        this.options.search = params;
-        
+        this._params.set('_targetUrl', this._url);
+
         // not sure why, but this broke after upgrade. replaced with above ^
         // this.params.replaceAll(params);
         
         if (this.spacesBase.tcProxyServer) {
-            this.requestUrl = this.spacesBase.tcProxyServer + '/secureProxy';
+            this._url = this.spacesBase.tcProxyServer + '/secureProxy';
         } else {
-            this.requestUrl = window.location.protocol + '//' +
+            this._url = window.location.protocol + '//' +
                 window.location.host + '/secureProxy';
         }
-        this.logging.debug('this.requestUrl', this.requestUrl);
+        this.logging.debug('this.requestUrl', this._url);
     }
 
-    public request(): Observable<Response> {
+    public request(): Observable<HttpResponse<Object>> {
         /**
          * Execute the API request
          * @param data - The resultStart value for pagination
          * @return The http Response Object
          */
-        this.logging.debug('this.requestUrl', this.requestUrl);
-        this.logging.debug('this.options', this.options);
+        if (this.useProxy) { this.proxyUrl(); }
+
+
+        const options =
+
+        this.logging.debug('this.requestUrl', this._url);
+        this.logging.debug('this.options', options);
         this.logging.debug('this.useProxy', this.useProxy);
 
-        this.options.params = this.params;
-        this.options.headers = this.headers;
+        let returnable: Observable<HttpResponse<Object>>;
 
-        if (this.useProxy) { this.proxyUrl(); }
-        return this.http.request(this.requestUrl, this.options)
-            .map(
-                res => {
-                    this.logging.info('res.url', res.url);
-                    this.logging.info('res.status', res.status);
-                    return res;
-                },
-                err => {
-                    this.logging.error('error', err);
-                }
-            );
+        switch (this._method) {
+            case 'GET':
+                returnable = this.http.get(this._url, {
+                    headers: this._headers,
+                    params: this._params,
+                    responseType: 'json',
+                    observe: 'response'
+                });
+            case 'POST':
+                returnable = this.http.post(this._url, this._body, {
+                    headers: this._headers,
+                    params: this._params,
+                    responseType: 'json',
+                    observe: 'response'
+                });
+            case 'PUT':
+                returnable = this.http.put(this._url, this._body, {
+                    headers: this._headers,
+                    params: this._params,
+                    responseType: 'json',
+                    observe: 'response'
+                });
+            case 'DELETE':
+                returnable = this.http.delete(this._url, {
+                    headers: this._headers,
+                    params: this._params,
+                    responseType: 'json',
+                    observe: 'response'
+                });
+        }
+
+
+        return returnable.map(
+            res => {
+                this.logging.info('res.url', res.url);
+                this.logging.info('res.status', res.status);
+                return res;
+            },
+            err => {
+                this.logging.error('error', err);
+            }
+        );
     }
 
     public resetOptions() {
@@ -287,15 +293,13 @@ export class SpacesRequestService {
          * @return The RequestService Object
          */
         this.logging.info('resetOptions', 'resetOptions');
-        this.headers = new Headers();
-        this.headers.set('Accept', 'application/json');
-        this.params = new URLSearchParams('', new SpacesQueryEncoder(this.logging));
         this.useProxy = false;
-        this.options = new RequestOptions({
-            headers: this.headers,
-            method: RequestMethod.Get,
-            search: this.params
-        });
+        this._method = 'GET';
+        this._body = null;
+        this._headers = new HttpHeaders();
+        this._params = new HttpParams();
+
+        this._headers.set('Accept', 'application/json');
         return this;
     }
 

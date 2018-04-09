@@ -1,6 +1,6 @@
 import { OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { SpacesBaseService } from '../../spaces_base.service';
+import { SpacesBaseService } from '../../services/spaces_base.service';
 import { Router } from '@angular/router';
 export declare class SpacesLandingPageComponent implements OnInit {
     private http;

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { SpacesBaseService } from '../../spaces_base.service';
+import { SpacesBaseService } from '../../services/spaces_base.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
