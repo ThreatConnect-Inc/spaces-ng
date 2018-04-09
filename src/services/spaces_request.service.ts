@@ -1,11 +1,35 @@
 import { Injectable } from '@angular/core';
-
+import {
+    Headers,
+    Http,
+    QueryEncoder,
+    RequestMethod,
+    RequestOptions,
+    Response,
+    URLSearchParams
+}
+    from '@angular/http';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 import { SpacesBaseService } from './spaces_base.service';
 import { SpacesLoggingService } from './spaces_logging.service';
-import { HttpClient, HttpParams, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { HttpObserve } from '@angular/common/http/src/client';
+
+
+class SpacesQueryEncoder extends QueryEncoder {
+    constructor(private logging: SpacesLoggingService) {
+        super();
+    }
+
+    encodeKey(k: string): string {
+        this.logging.info('Query Encoder', `Got key ${k}`);
+        return encodeURIComponent(k);
+    }
+    encodeValue(v: string): string {
+        this.logging.info('Query Encoder', `Got value ${v}`);
+        return encodeURIComponent(v);
+    }
+}
+
 
 @Injectable()
 export class SpacesRequestService {
@@ -13,23 +37,24 @@ export class SpacesRequestService {
      * Generic Request Module for ThreatConnect API
      */
 
-    private _method = 'GET';
-    private _body;
-
-    private _headers = new HttpHeaders();
-    private _params = new HttpParams();
+    private headers = new Headers();
+    private params = new URLSearchParams('', new SpacesQueryEncoder(this.logging));  // must be above options
+    private options = new RequestOptions({
+        headers: this.headers,
+        method: RequestMethod.Get,
+        params: this.params
+    });
     private useProxy: boolean;
-    private _url: string;
+    private requestUrl: string;
 
     constructor(
-        private http: HttpClient,
+        private http: Http,
         private logging: SpacesLoggingService,
         private spacesBase: SpacesBaseService
     ) {
         this.logging.moduleColor('#2878b7', '#fff', 'SpacesRequestService');
-        this.resetOptions();
     }
-    
+
     public method(data: string) {
         /**
          * Set the HTTP method
@@ -39,24 +64,24 @@ export class SpacesRequestService {
         this.logging.debug('data', data);
         switch (data.toUpperCase()) {
             case 'DELETE':
-                this._method = 'DELETE';
+                this.options.method = RequestMethod.Delete;
                 break;
             case 'GET':
-                this._method = 'GET';
+                this.options.method = RequestMethod.Get;
                 break;
             case 'POST':
-                this._method = 'POST';
+                this.options.method = RequestMethod.Post;
                 break;
             case 'PUT':
-                this._method = 'PUT';
+                this.options.method = RequestMethod.Put;
                 break;
             default:
-                // todo handle this as an exception
+                this.options.method = RequestMethod.Get;
                 break;
         }
         return this;
     }
-    
+
     public proxy(data: boolean) {
         /**
          * Use secureProxy
@@ -75,7 +100,7 @@ export class SpacesRequestService {
          * @return The RequestService Object
          */
         this.logging.debug('data', data);
-        this._url = data;
+        this.requestUrl = data;
         return this;
     }
 
@@ -90,7 +115,7 @@ export class SpacesRequestService {
          * @param val - The header value
          * @return The RequestService Object
          */
-        this._headers.set(key, val);
+        this.headers.set(key, val);
         this.logging.debug('key', key);
         this.logging.debug('val', val);
         return this;
@@ -123,7 +148,7 @@ export class SpacesRequestService {
     //
     // body
     //
-    
+
     public body(data: any) {
         /**
          * The body for the request
@@ -131,7 +156,7 @@ export class SpacesRequestService {
          * @return The RequestService Object
          */
         this.logging.debug('data', data);
-        this._body = data;
+        this.options.body = data;
         return this;
     }
 
@@ -148,7 +173,7 @@ export class SpacesRequestService {
          */
         this.logging.debug('key', key);
         this.logging.debug('val', val);
-        this._params.set(key, val);
+        this.params.set(key, val);
         return this;
     }
 
@@ -212,79 +237,48 @@ export class SpacesRequestService {
         /**
          * Proxify the request using secureProxy
          */
-        this._params.set('_targetUrl', this._url);
+        let params = new URLSearchParams();
+        params.set('_targetUrl', this.requestUrl);
+        params.appendAll(this.params);
+        this.options.search = params;
 
         // not sure why, but this broke after upgrade. replaced with above ^
         // this.params.replaceAll(params);
-        
+
         if (this.spacesBase.tcProxyServer) {
-            this._url = this.spacesBase.tcProxyServer + '/secureProxy';
+            this.requestUrl = this.spacesBase.tcProxyServer + '/secureProxy';
         } else {
-            this._url = window.location.protocol + '//' +
+            this.requestUrl = window.location.protocol + '//' +
                 window.location.host + '/secureProxy';
         }
-        this.logging.debug('this.requestUrl', this._url);
+        this.logging.debug('this.requestUrl', this.requestUrl);
     }
 
-    public request(): Observable<HttpResponse<Object>> {
+    public request(): Observable<Response> {
         /**
          * Execute the API request
          * @param data - The resultStart value for pagination
          * @return The http Response Object
          */
-        if (this.useProxy) { this.proxyUrl(); }
-
-
-        const options =
-
-        this.logging.debug('this.requestUrl', this._url);
-        this.logging.debug('this.options', options);
+        this.logging.debug('this.requestUrl', this.requestUrl);
+        this.logging.debug('this.options', this.options);
         this.logging.debug('this.useProxy', this.useProxy);
 
-        let returnable: Observable<HttpResponse<Object>>;
+        this.options.params = this.params;
+        this.options.headers = this.headers;
 
-        switch (this._method) {
-            case 'GET':
-                returnable = this.http.get(this._url, {
-                    headers: this._headers,
-                    params: this._params,
-                    responseType: 'json',
-                    observe: 'response'
-                });
-            case 'POST':
-                returnable = this.http.post(this._url, this._body, {
-                    headers: this._headers,
-                    params: this._params,
-                    responseType: 'json',
-                    observe: 'response'
-                });
-            case 'PUT':
-                returnable = this.http.put(this._url, this._body, {
-                    headers: this._headers,
-                    params: this._params,
-                    responseType: 'json',
-                    observe: 'response'
-                });
-            case 'DELETE':
-                returnable = this.http.delete(this._url, {
-                    headers: this._headers,
-                    params: this._params,
-                    responseType: 'json',
-                    observe: 'response'
-                });
-        }
-
-
-        return returnable.map(
-            res => {
-                this.logging.info('res.url', res.url);
-                this.logging.info('res.status', res.status);
-                return res;
-            },
-            err => {
-                this.logging.error('error', err);
-            }
-        );
+        if (this.useProxy) { this.proxyUrl(); }
+        return this.http.request(this.requestUrl, this.options)
+            .map(
+                res => {
+                    this.logging.info('res.url', res.url);
+                    this.logging.info('res.status', res.status);
+                    return res;
+                },
+                err => {
+                    this.logging.error('error', err);
+                }
+            );
     }
 
     public resetOptions() {
@@ -293,13 +287,15 @@ export class SpacesRequestService {
          * @return The RequestService Object
          */
         this.logging.info('resetOptions', 'resetOptions');
+        this.headers = new Headers();
+        this.headers.set('Accept', 'application/json');
+        this.params = new URLSearchParams('', new SpacesQueryEncoder(this.logging));
         this.useProxy = false;
-        this._method = 'GET';
-        this._body = null;
-        this._headers = new HttpHeaders();
-        this._params = new HttpParams();
-
-        this._headers.set('Accept', 'application/json');
+        this.options = new RequestOptions({
+            headers: this.headers,
+            method: RequestMethod.Get,
+            search: this.params
+        });
         return this;
     }
 
@@ -309,7 +305,7 @@ export class SpacesRequestService {
          * @param err - The https Response Object
          */
         var errorText = error.text();
-        this.logging.error('Error', 'request to ' + error.url + 
+        this.logging.error('Error', 'request to ' + error.url +
             ' failed with: ' + errorText);
         return Promise.reject(errorText || error);
     }

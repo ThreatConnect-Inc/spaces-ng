@@ -86,7 +86,7 @@ export class SpacesBaseService implements Resolve<any> {
             // spaces need to be un-encoded from '+' before decoding
             let param = this._params[name];
             if (param !== undefined) {
-                param = decodeURIComponent(param.replace('+', ' '));
+                param = decodeURIComponent(param.replace(/\+/g, ' '));
             }
             return param;
          } else {
